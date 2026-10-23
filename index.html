@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시드니 7일 여행 일정 (10/25–10/31)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--surface-0:#f3f2ee;--surface-1:#f7f6f3;--surface-2:#ffffff;--text-primary:#1f1e1d;--text-secondary:#5f5e5a;--text-muted:#888780;--border:rgba(0,0,0,.12);--border-strong:rgba(0,0,0,.22);--border-accent:#378ADD;--bg-accent:#E6F1FB;--text-accent:#185FA5;--bg-success:#EAF3DE;--text-success:#3B6D11;--bg-warning:#FAEEDA;--text-danger:#A32D2D;--text-warning:#854F0B;--radius:8px;--font-sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+@media (prefers-color-scheme:dark){:root{--surface-0:#1a1a19;--surface-1:#262624;--surface-2:#2c2c2a;--text-primary:#f1efe8;--text-secondary:#b4b2a9;--text-muted:#888780;--border:rgba(255,255,255,.12);--border-strong:rgba(255,255,255,.22);--border-accent:#85B7EB;--bg-accent:#0C447C;--text-accent:#B5D4F4;--bg-success:#27500A;--text-success:#C0DD97;--bg-warning:#633806;--text-danger:#F09595;--text-warning:#FAC775}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:var(--font-sans);font-size:15px;line-height:1.6}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:20px;font-weight:500;margin:4px 0}
+button{font-family:inherit;font-size:14px;color:var(--text-primary);background:transparent;border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:6px 12px;cursor:pointer}
+button:hover{background:var(--surface-1)}
+input,select{font-family:inherit;font-size:14px;color:var(--text-primary);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:var(--radius);padding:6px 8px;height:34px}
+textarea{font-family:inherit}
+.card{border:0.5px solid var(--border);border-radius:12px;background:var(--surface-2);margin:0 0 12px}
+.bd{padding:0 16px 14px}
+.day>.bd{display:none}.day.open>.bd{display:block}
+.dhd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;cursor:pointer}
+.dhd .tog{margin-left:auto;border:0;padding:2px 6px}
+.day.open .tog i{transform:rotate(180deg)}
+.dl{font-size:13px;color:var(--text-secondary)}
+.dt{font-weight:500}
+.rw{display:grid;grid-template-columns:18px 76px minmax(0,1fr) 24px;gap:8px;padding:10px 0;border-top:0.5px solid var(--border);font-size:14px;line-height:1.6;background:var(--surface-2)}
+.rows{min-height:10px}
+.noopt .rw.opt{display:none}
+.grip{color:var(--text-muted);cursor:grab;touch-action:none;display:flex;align-items:flex-start;padding-top:2px;font-size:16px}
+.grip:active{cursor:grabbing}
+.del,.pdel{border:0;padding:0;color:var(--text-muted);font-size:15px;height:24px;background:transparent}
+.del:hover,.pdel:hover{color:var(--text-danger)}
+.ghost{opacity:.35}
+.ce{cursor:text;white-space:pre-wrap;word-break:break-word;outline:none;border-radius:4px}
+.ce:hover{background:var(--surface-1)}
+.ce:focus{background:var(--surface-1);box-shadow:0 0 0 1px var(--border-accent)}
+.ce:empty:before{content:attr(data-ph);color:var(--text-muted)}
+.t{color:var(--text-secondary);font-size:13px}.o{color:var(--text-muted);font-size:12px;margin-top:2px;display:block}
+.old{font-size:13px;color:var(--text-secondary);margin-top:6px;padding-top:6px;border-top:0.5px dashed var(--border)}
+.tg{font-size:11px;padding:1px 6px;border-radius:var(--radius);margin-right:6px;background:var(--surface-1);color:var(--text-secondary);vertical-align:1px}
+.tg.n{background:var(--bg-accent);color:var(--text-accent)}
+.tg.x{background:var(--bg-warning);color:var(--text-warning)}
+.cf{font-size:11px;padding:0 8px;margin-left:6px;color:var(--text-warning);border-color:var(--text-warning);vertical-align:1px}
+.m-new .old,.m-old .nw{display:none}.m-old .old{margin-top:0;padding-top:0;border-top:0;font-size:14px;color:var(--text-primary)}
+.w{font-size:13px;background:var(--surface-1);border-radius:var(--radius);padding:8px 10px;margin:0 0 6px;line-height:1.6}
+.chip{font-size:12px;padding:3px 10px;border-radius:var(--radius);background:var(--bg-accent);color:var(--text-accent)}
+.sec{font-size:13px;font-weight:500;margin:12px 0 4px}
+.pi{display:grid;grid-template-columns:20px minmax(0,1fr) 24px;gap:6px;align-items:start;font-size:13px;line-height:1.7;padding:2px 0}
+.pck{width:16px;height:16px;margin:4px 0 0;padding:0;cursor:pointer;accent-color:#378ADD}
+.pi.done .px{text-decoration:line-through;color:var(--text-muted)}
+.padd{font-size:12px;padding:3px 10px;margin-top:4px}
+.lk{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.lk a,a.bt{font-size:12px;padding:3px 10px;border:0.5px solid var(--border-strong);border-radius:var(--radius);color:var(--text-accent);text-decoration:none;white-space:nowrap}
+.sm{font-size:12px;padding:3px 10px}
+.on{background:var(--bg-accent)!important;color:var(--text-accent)!important;border-color:var(--border-accent)!important}
+.ed textarea{width:100%;font-size:13px;min-height:52px;padding:6px 8px;border-radius:var(--radius);border:0.5px solid var(--border-strong);background:var(--surface-2);color:var(--text-primary)}
+.wx{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:6px}
+.wd{background:var(--surface-1);border-radius:var(--radius);padding:8px;font-size:12px;line-height:1.5;text-align:center}
+.num{width:22px;height:22px;border-radius:50%;background:#26215C;color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.lg{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary);margin-right:10px}
+.lg i{display:inline-block;width:16px;height:3px}
+.st{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;font-size:13px;line-height:1.6;padding:6px 0;border-top:0.5px solid var(--border)}
+.dist{font-size:12px;color:var(--text-secondary);margin-top:2px}
+.fr{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:8px 0;border-top:0.5px solid var(--border)}
+.th{width:48px;height:48px;border-radius:var(--radius);background:var(--surface-1);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.bar{height:6px;border-radius:3px;background:var(--surface-1);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:#639922}
+</style>
+</head>
+<body>
+<main>
+<h1>시드니 7일 여행</h1>
+<div style="font-size:13px;color:var(--text-secondary)">10.25(일) – 10.31(토) · 성인 3명 · Meriton Suites North Sydney (80 Arthur St)</div>
+<div id="today" style="font-size:13px;margin-top:4px;color:var(--text-accent)"></div>
+<div style="display:flex;gap:6px;margin:10px 0 14px;flex-wrap:wrap">
+<button data-tab="plan" class="on"><i class="ti ti-calendar"></i> 일정</button>
+<button data-tab="map"><i class="ti ti-map-2"></i> 동선 지도</button>
+<button data-tab="wx"><i class="ti ti-cloud"></i> 날씨</button>
+<button data-tab="prep"><i class="ti ti-checklist"></i> 준비·확인</button>
+<button data-tab="docs"><i class="ti ti-folder"></i> 서류</button>
+</div>
+
+<div id="planWrap">
+<div class="card"><div class="bd" style="padding-top:12px"><div class="sec" style="margin-top:0"><i class="ti ti-bus"></i> 실시간 대중교통</div>
+<div class="lk">
+<a href="https://transportnsw.info/trip" target="_blank" rel="noopener">NSW 경로 검색·출발 정보 <i class="ti ti-external-link"></i></a>
+<a href="https://transportnsw.info/alerts" target="_blank" rel="noopener">운행 변경·지연 알림 <i class="ti ti-external-link"></i></a>
+<a href="https://www.google.com/maps/dir/?api=1&origin=-33.8378,151.2075&travelmode=transit" target="_blank" rel="noopener">숙소 출발 구글맵 대중교통 <i class="ti ti-external-link"></i></a>
+</div>
+<div style="font-size:12px;color:var(--text-muted);margin-top:6px">구간별 실시간 링크와 거리는 동선 지도 탭에 있어요.</div>
+</div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px"><span style="font-size:13px;color:var(--text-secondary)">보기</span><button data-mode="both" class="on" style="font-size:13px">기존 + 보완 비교</button><button data-mode="new" style="font-size:13px">보완만</button><button data-mode="old" style="font-size:13px">기존만</button><button id="optTog" style="font-size:13px"><i class="ti ti-eye-off"></i> 선택안 숨기기</button></div>
+<div style="font-size:12px;color:var(--text-muted);margin:0 0 10px;line-height:1.6">글자를 누르면 바로 수정돼요. <i class="ti ti-grip-vertical"></i> 손잡이를 끌면 일정 순서를 바꾸거나 다른 날로 옮길 수 있고, DAY 옆 손잡이를 끌면 날짜끼리 내용이 바뀌어요. <span class="tg x">선택안</span>은 "확정"을 누르면 일반 일정이 돼요.</div>
+<div id="plan" class="m-both"></div>
+<div id="planNote" style="font-size:12px;color:var(--text-muted);line-height:1.6;margin:4px 0 12px"></div>
+</div>
+
+<div id="mapWrap" style="display:none">
+<div id="mapDays" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+<div id="mapTitle" style="font-size:14px;font-weight:500;margin-bottom:4px"></div>
+<div id="mapSum" class="w"></div>
+<div id="map" style="height:420px;border-radius:12px;border:0.5px solid var(--border);background:var(--surface-1)"></div>
+<div id="mapNote" style="font-size:12px;color:var(--text-muted);margin-top:6px"></div>
+<div style="margin:8px 0"><span class="lg"><i style="background:#D85A30"></i>도보</span><span class="lg"><i style="background:#7F77DD"></i>메트로·기차</span><span class="lg"><i style="background:#1D9E75"></i>버스·트램</span><span class="lg"><i style="background:#378ADD"></i>페리</span><span class="lg"><i style="background:#5F5E5A"></i>우버·차량</span></div>
+<div id="mapGo" style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0"></div>
+<div id="mapList" style="margin-bottom:8px"></div>
+<div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px">거리는 좌표 기준 추정치예요 (직선거리에 도보·버스·차량 1.3배, 기차 1.2배 보정, 페리는 항로 기준). 도보 시간은 시속 3.5km 기준이고 언덕·신호 대기는 반영되지 않았어요. 선택안(크루즈·공연) 동선은 지도에 포함되지 않아요.</div>
+</div>
+
+<div id="wx" style="display:none"></div>
+<div id="prep" style="display:none"></div>
+
+<div id="docs" style="display:none">
+<div class="card"><div class="bd" style="padding-top:14px">
+<div class="sec" style="margin-top:0">서류 올리기</div>
+<div style="display:grid;gap:8px">
+<select id="dcCat"></select>
+<input id="dcMemo" placeholder="메모 (예: 아빠 여권, 보험 증권번호)" style="width:100%">
+<input id="dcFile" type="file" accept="image/*,application/pdf" multiple style="height:auto">
+<div><button id="dcUp"><i class="ti ti-upload"></i> 저장하기</button></div>
+<div id="dcMsg" style="font-size:13px"></div>
+</div></div></div>
+<div id="dcList"></div>
+<div id="dcView"></div>
+<div style="font-size:12px;color:var(--text-muted);line-height:1.7;margin:4px 0 16px">올린 파일은 이 기기의 이 브라우저에만 저장돼요. 다른 기기나 백업 코드로는 옮겨지지 않고, 브라우저 데이터를 지우면 함께 사라지니 원본은 사진첩·클라우드에도 보관하세요. 휴대폰 잠금을 풀 수 있는 사람은 볼 수 있으니 공용 기기에서는 쓰지 마세요.</div>
+</div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+const G=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q+' Sydney');
+const LK={bomS:['BoM 시드니 예보','https://www.bom.gov.au/nsw/forecasts/sydney.shtml'],radar:['BoM 시드니 레이더','https://www.bom.gov.au/products/IDR713.loop.shtml'],bomK:['BoM 카툼바','https://www.bom.gov.au/places/nsw/katoomba/'],bomW:['BoM 울런공','https://www.bom.gov.au/places/nsw/wollongong/'],trip:['NSW 경로 검색 (실시간)','https://transportnsw.info/trip'],alerts:['운행 알림','https://transportnsw.info/alerts'],opera:['오페라하우스 투어','https://www.sydneyoperahouse.com/tours-and-experiences'],operaShow:['오페라하우스 공연 일정','https://www.sydneyoperahouse.com/whats-on'],agnsw:['NSW 주립미술관','https://www.artgallery.nsw.gov.au'],sbs:['Sculpture by the Sea','https://sculpturebythesea.com'],scenic:['Scenic World','https://www.scenicworld.com.au'],npws:['국립공원 통제 알림','https://www.nationalparks.nsw.gov.au/alert/state-alerts'],lion:['라이온 킹 예매','https://www.thelionking.com.au'],museum:['호주박물관','https://australian.museum'],qvb:['QVB','https://www.qvb.com.au'],trs:['TRS 부가세 환급 안내','https://www.abf.gov.au/entering-and-leaving-australia/tourist-refund-scheme'],syd:['시드니공항','https://www.sydneyairport.com.au']};
+const DATES=[
+{date:'2026-10-25',lab:'10/25 일',wx:'19~31°C · 14:30 이후 소나기·뇌우 80%'},
+{date:'2026-10-26',lab:'10/26 월',wx:'18~25°C · 오전 소나기 70% · 오후 남풍 20~30km/h'},
+{date:'2026-10-27',lab:'10/27 화',wx:'카툼바 6~17°C 맑음 (체감 3~10°C) · 시드니 14~22°C'},
+{date:'2026-10-28',lab:'10/28 수',wx:'13~23°C 구름 조금, 강수 30%'},
+{date:'2026-10-29',lab:'10/29 목',wx:'울런공·시드니 14~22°C 대체로 맑음, 강수 30%'},
+{date:'2026-10-30',lab:'10/30 금',wx:'15~23°C 구름 조금, 강수 40%'},
+{date:'2026-10-31',lab:'10/31 토',wx:'15~23°C 맑음'}];
+const RAW=[
+{id:'d1',title:'록스 · 오페라하우스 · 미술관',rows:[
+['10:00–11:45','공항 T1 → 호텔. UberXL 또는 택시 승강장 Maxi(밴)','입국·수하물 60~90분 여유','10:00~11:50 T1 택시 또는 앱 XL → 80 Arthur St'],
+['11:45–12:45','점심: Charlie + Franks (110 Walker St, 도보 8분) 1순위','한낮 더위라 가까운 곳 우선','점심: The Foliage Cafe (도보 12~15분) 또는 Charlie + Franks'],
+['12:45–14:30','Victoria Cross → Barangaroo(메트로 3분) → 록스 주말마켓 → 해안 평지로 오페라하우스 외관','카페: La Renaissance (47 Argyle St)','11:50~14:40 North Sydney역 → Wynyard 기차 → 도보 15~20분 → 록스마켓 45~55분 → 오페라 도보 20~25분'],
+['14:30–16:30','실내: 오페라하우스 한국어 투어 → 우버 5분 NSW 주립미술관','폭염·소나기 시간대 실내','14:40~16:10 식물원 내부 통로 도보 30~40분 → 미술관 관람'],
+['14:30–16:30','26일 저녁 오페라 공연을 볼 경우: 한국어 가이드 투어 생략 → 미술관만 보거나 숙소에서 휴식','다음 날 공연 때 내부를 보게 돼요 · 비행 당일 체력 아끼기','',1],
+['16:30–18:00','비: 미술관 → Martin Place역 → Victoria Cross / 맑음: Milsons Point 페리 → 루나파크 사진 → 기차 1정거장','루나파크→호텔 오르막 도보 금지','16:10~17:20 미술관 → 서큘러키 도보 25~30분 → 페리 → 루나파크 → 호텔까지 오르막 도보 20~25분'],
+['18:00–19:30','Coles Local 장보기 → 19시경 숙소 스테이크, 일찍 취침','뇌우 예보로 Clark Park 생략','18:35 Clark Park 산책 → Coles 장보기 → 20:15 숙소 스테이크']],
+prep:['오페라하우스 한국어 투어 예약과 투어 시각 확정 (26일 공연을 보면 생략 가능)','3단 우산·방수 운동화','입국 지연 시 오후 일정 순연','Coles Local 일요일 영업시간'],
+links:[LK.bomS,LK.radar,LK.opera,LK.agnsw,LK.trip,['Charlie + Franks 지도',G('Charlie + Franks North Sydney')],['더 록스 마켓 지도',G('The Rocks Markets')]]},
+{id:'d2',title:'바다 조각전 · 본다이',rows:[
+['08:30–10:30','숙소에서 여유 있게 아침, 10:00~10:30 출발. 비 오면 시내 커피 먼저','오전 비 시간대 피하기','07:30 아침 → 09:00 출발 → Town Hall 기차 → 도보 10~15분 → 373번 버스 → 10:15 쿠지 도착'],
+['10:30–12:15','333번 버스 또는 우버로 브론테 해변 직행 (또는 쿠지 Dunningham Reserve 전망대만 보고 이동)','쿠지~브론테 4km 생략','10:15 쿠지 카페 → 10:45~12:30 쿠지 → 고든스베이 → 클로벨리 → 웨이벌리 묘지 → 브론테 (3.5~4km)'],
+['12:15–13:30','점심: Bronte Belo (469 Bronte Rd) 또는 Bondi Icebergs Club Bistro','Cafe 143은 오르막이라 제외','12:30~13:20 Bronte Belo 또는 Cafe 143 (편도 오르막 12~18분)'],
+['13:30–16:00','브론테 → 타마라마 → Marks Park → Icebergs → 본다이 (약 2km)','계단 부담 시 Notts Ave 경사로','13:20~16:15 브론테 → 타마라마 → 맥켄지스포인트 → Icebergs → 본다이 (2~2.5km, 이미 4km 걸은 뒤)'],
+['16:00–17:00','Anita Gelato (180 Campbell Pde) / Gelato Messina (61 Hall St)','유지','15시대 해변·젤라토 휴식'],
+['17:00–20:00','333번 버스 → Bar Totti\'s (330 George St) → Wynyard/Martin Place 귀가','17:30경 이른 방문','16:15~ 333번 버스 → Bar Totti\'s 선택 저녁 → Wynyard → North Sydney 기차'],
+['16:30–18:30','오페라 공연 선택 시: 본다이 16:30 출발 (333번 버스 또는 우버) → Bar Totti\'s 17:15 이른 저녁 → 18:30 우버 5분으로 오페라하우스','젤라토는 짧게 · 저녁은 75분 안에 끝내기','',1],
+['19:00–20:30','시드니 오페라하우스 공연 (19:00–20:30) → Circular Quay역 기차 또는 우버로 숙소, 약 21:00 도착','18:40까지 도착 · 늦으면 입장이 제한될 수 있어요','',1]],
+prep:['해안 산책로 폐쇄·공사 우회 여부 (비 온 뒤 미끄러움 주의)','조각전 기간·혼잡 안내','Bar Totti\'s 예약 (공연 보면 17:15로)','모자·선크림·물·바람막이','오페라 공연 예매: 26일 19:00 회차, 좌석·입장 규정 (선택안)'],
+links:[LK.bomS,LK.radar,LK.sbs,LK.operaShow,LK.trip,['Bronte Belo 지도',G('Bronte Belo Bronte Beach')],['Bondi Icebergs 지도',G('Bondi Icebergs Club')],['Bar Totti\'s 지도',G("Bar Totti's 330 George St")]]},
+{id:'d3',title:'블루마운틴 · 천문대 언덕 일몰',rows:[
+['아침–17:30','메트로/기차로 집합지 이동 → 블루마운틴 투어. 방한복 필수','시닉월드 궤도열차 중간 열','숙소 아침 → 집합지 → 투어. 카툼바 정차 시 Yellow Deli 또는 Mountain Culture 점심'],
+['17:30–18:15','하차지에서 바로 우버 → Observatory Hill Park Rotunda (Upper Fort St)','약 $9~13','Wynyard 하차 후 Upper Fort St까지 오르막 도보 15~20분 (Central 하차 시 35~50분)'],
+['18:15–19:20','천문대 언덕 일몰 (약 19:18), 겉옷 착용','유지','18:15~19:35 언덕 일몰, 18:30 이전 도착 목표'],
+['19:20–20:45','The Glenmore Hotel 루프탑 저녁 또는 Victoria Cross 복귀 후 Rengaya','숙소 조리 대신 외식','Wynyard까지 도보 15~20분 → 기차 → Coles → 20:40 숙소 파스타 조리']],
+prep:['투어 바우처: 픽업 시각·장소, 하차지(Wynyard/Central), 점심 포함 여부','부모님 경량패딩·플리스·방풍자켓·스카프','Rengaya 예약','국립공원 산불·통제 알림 확인','투어 18:45 이후 도착 시 일몰 생략'],
+links:[LK.bomK,LK.bomS,LK.npws,LK.scenic,['천문대 언덕 지도',G('Observatory Hill Park Rotunda')],['The Glenmore 지도',G('The Glenmore Hotel The Rocks')],['Rengaya 지도',G('Rengaya North Sydney')]]},
+{id:'d4',title:'자카란다 · 하버브리지 · 바랑가루 · 왓슨스베이',rows:[
+['08:45–09:45','우버 5분 McDougall St, Kirribilli → 자카란다 사진 → Cool Mac (2/34 Burton St)','$8~10','호텔 → High St → McDougall St 도보 15~20분 → 사진 25분'],
+['09:45–10:50','Burton St·Broughton St 모퉁이 Harbour Bridge Lift → 동쪽 보행로 횡단','남쪽은 Cumberland St 쪽','Milsons Point역 주변 계단/승강기 → 동쪽 보행로 → Cumberland St 계단 (60~70분)'],
+['10:50–12:00','해안 평지 Wulugul Walk로 바랑가루 식당가','벤치·화장실 있음','남쪽 계단 → Argyle St → Millers Point → Barangaroo Reserve → 식당가 도보 30~40분'],
+['12:00–13:15','Lotus Barangaroo 딤섬 1순위 / Zushi','12시 오픈','Lotus 또는 Zushi 12시 오픈 입장'],
+['13:15–14:15','Barangaroo Wharf F4 페리 → Circular Quay 8분 → F9 Watsons Bay','민간 페리와 혼동 주의','식당 → Circular Quay 도보 25~35분 → F9 탑승'],
+['14:15–18:00','디너크루즈 선택 시: 왓슨스베이 생략 → F4 하차 후 Circular Quay에서 기차·메트로로 숙소 복귀, 휴식·옷 갈아입기','크루즈에서 하버 경치를 충분히 봐서 F9 왕복과 겹쳐요','',1],
+['14:15–16:00','Robertson Park → The Gap. Camp Cove는 컨디션 좋을 때만','Watsons Bay Milk Bar 14시대','Robertson Park → The Gap(12분) → Camp Cove 왕복(35분) → 카페 20분'],
+['16:00–18:30','F9 → 서큘러키 → Martin Place/Wynyard → 숙소 조리 또는 Glorietta','저녁 라이온킹 선택 가능','F9 → 서큘러키 → 기차 → Coles 장보기 → 숙소 저녁'],
+['19:00–22:00','디너크루즈 (19:00–22:00) → 하선 후 우버로 숙소','18:30까지 승선 부두 도착 · 라이온킹 19:00과 겹치니 둘 중 하나','',1]],
+prep:['Lotus Barangaroo 점심 예약','F4·F9 시간표와 F9 막차, 악천후 결항','하버브리지 엘리베이터 운영 여부','자카란다 개화 상태','라이온킹 19:00 관람 시 예매','디너크루즈 예약 (19:00–22:00): 승선 부두·드레스코드·우천 정책 (선택안)'],
+links:[LK.bomS,LK.trip,LK.alerts,LK.lion,['디너크루즈 찾아보기',G('dinner cruise Sydney Harbour')],['Harbour Bridge Lift 지도',G('Burton St Broughton St Milsons Point')],['Lotus Barangaroo 지도',G('Lotus Barangaroo')],['The Gap 지도',G('The Gap Watsons Bay')]]},
+{id:'d5',title:'울런공·키아마 투어 · 서리힐즈',rows:[
+['아침–17:30','울런공 투어 진행, 해안 바람막이 지참','점심: Harbourfront Seafood / Levendi','숙소 아침 → 집합지 → 울런공 투어 (항구 자유식사 시 Harbourfront 또는 Levendi)'],
+['17:30–18:00','Central역 L2/L3 트램 1정거장(3분) → Surry Hills → Crown St 4분','Foveaux St 급경사 도보 금지','Central역 → Foveaux St 오르막 도보 20~25분'],
+['18:00–19:45','Pieno (285A Crown St) 저녁 외식 → Gelato Messina Surry Hills','목요일 영업 확인','18:15~19:00 Crown St 산책·Messina 젤라토 간식'],
+['19:45–20:15','트램 → Central → 메트로 M1 → Victoria Cross (약 20분)','','도보 20~25분 Central → North Sydney 기차 → Coles 장보기 → 숙소 조리'],
+['우천 B안','Gadigal역(메트로) → 호주박물관 → QVB 실내 아케이드 위주','','North Sydney → Town Hall → 호주박물관 → Haymarket 점심 → QVB·Westfield → 서리힐즈 낮 카페 → 18시 숙소 저녁']],
+prep:['투어 바우처: 픽업·하차지, 점심 자유식 여부','바닷바람용 가디건·바람막이','Pieno 목요일 저녁 영업','전날 밤 예보 보고 A/B안 결정 (투어 취소 정책)','B안 시 호주박물관 운영시간'],
+links:[LK.bomW,LK.bomS,LK.museum,LK.trip,['Pieno 지도',G('Pieno Crown St Surry Hills')],['Messina Surry Hills 지도',G('Gelato Messina 389 Crown St Surry Hills')]]},
+{id:'d6',title:'시드니대 · 뉴타운 · 쇼핑 · 마막 · 야시장',rows:[
+['09:00–10:00','Victoria Cross → Central → Railway Square 버스 → 시드니대 정문','412·413·422·423·426·428·438X·440번','08:45 North Sydney역 → Redfern역 기차 → Lawson St로 도보 25~30분'],
+['10:00–11:30','Quadrangle 관람 → City Rd 422·423·426·428번 → 뉴타운 6분','도보 30분 절약','Quadrangle 60~75분 → King St까지 도보 15~30분'],
+['11:45–13:30','Thai Pothong (294 King St) 1순위 / Pastizzi Cafe → King St 구경','12:00 오픈','12:00 Thai Pothong 또는 Pastizzi Cafe → King St 구경'],
+['13:30–15:00','우버 → STUSSY (18 Oxford Square) → 버스 또는 Museum→Town Hall 기차로 QVB','$14~18','Newtown → Central 기차 → 오르막 도보 20~25분 → STUSSY 40분 → QVB 도보 20~25분'],
+['15:00–17:15','따님: 아크테릭스·룰루레몬 / 부모님: The Tea Room QVB','60~80분 분리','QVB 아크테릭스 → Westfield 룰루레몬 → Mamak 도보 18~22분'],
+['17:15–20:30','L2/L3 트램 → Mamak 17:30 → Dixon St 야시장 → 트램·메트로 귀가','마막 대기 길면 Ho Jiak','17:40 Mamak → Dixon St 야시장 → Town Hall역 도보 → North Sydney 기차']],
+prep:['The Tea Room QVB 예약','쇼핑 시 여권 지참, 한 매장(ABN) 합계 $300 이상이면 Tax Invoice 요청','버스 번호·정류장 당일 경로 검색으로 재확인','밤: TRS 물품 기내 가방에 따로, MyTRS 입력'],
+links:[LK.qvb,LK.trs,LK.trip,LK.bomS,['Thai Pothong 지도',G('Thai Pothong Newtown')],['STUSSY 지도',G('Stussy 18 Oxford Square Darlinghurst')],['Mamak 지도',G('Mamak Haymarket')]]},
+{id:'d7',title:'11:40 국제선 출국',rows:[
+['06:00–06:45','아침 → 객실 점검 → 체크아웃. TRS 물품은 기내 가방','','숙소에서 간단 아침 → 체크아웃, 프런트 택시 또는 XL 호출'],
+['06:45–07:40','UberXL / Maxi Taxi → T1 Departures','유지','06:45 출발 → T1 Departures (35~60분)'],
+['07:40–09:30','체크인 → 출국심사·보안검색 → TRS 카운터 (20~35분)','TRS 절차 추가','수하물 위탁 → 출국·보안검색 (08:40 이전 도착)'],
+['09:30–11:40','게이트 확인 후 카페 휴식 → 탑승','유지','탑승구 확인 → 게이트 근처 카페 → 11:40 출발']],
+prep:['항공사 온라인 체크인·카운터 오픈 시각','전날 밤 XL 차량 또는 프런트 택시 예약','TRS: 여권·탑승권·원본 영수증·실물·MyTRS QR','주말 철도 공사 (철도 대안 이용 시)'],
+links:[LK.syd,LK.trs,LK.trip,LK.alerts]}];
+const COMMON_DEF=['27·29일 투어 바우처 (픽업·하차·식사)','Uber 앱 카드 등록, Transport for NSW 앱 또는 구글맵 설치','각자 컨택리스 카드 (해외결제 가능)','사전 예약: 오페라 투어 · Bar Totti\'s/Rengaya · Lotus · Tea Room QVB','여권·보험·항공권 사본을 서류 탭에 저장','부모님 상비약·편한 운동화'];
+const OLD_OPT_A=['29일 저녁 오페라 공연을 볼 경우: 한국어 가이드 투어 생략 → 외관 사진 후 미술관만 보거나 숙소에서 휴식','디너크루즈 선택 시: 왓슨스베이 생략 → F4 하차 후 Circular Quay에서 기차·메트로로 숙소 복귀, 휴식·옷 갈아입기','디너크루즈 약 3시간 (18:30 전후 승선 → 22:00 전후 하선) → 우버로 숙소','오페라 공연 선택 시: 투어 하차 → 메트로·기차로 Martin Place / Circular Quay → 오페라하우스 주변 이른 저녁','시드니 오페라하우스 공연 약 1시간 30분 → Circular Quay역 기차 또는 우버로 숙소'];
+const OLD_OPT_P=['디너크루즈 예약: 승선 부두·시각·드레스코드·우천 정책 (선택안)','오페라 공연 예매: 회차·좌석·늦게 도착 시 입장 규정 (선택안)'];
+const H=['숙소 Meriton Suites',-33.8378,151.2075];
+const RT={
+d1:{note:'공항→숙소 차량 구간은 생략. 비 오는 날은 미술관에서 Martin Place역 메트로로 바로 복귀.',s:[[...H],['Charlie + Franks 점심',-33.8375,151.2090,'w'],['Victoria Cross역',-33.8393,151.2063,'w'],['Barangaroo역',-33.8616,151.2056,'m'],['더 록스 주말마켓',-33.8590,151.2085,'w'],['오페라하우스 (외관·한국어 투어)',-33.8568,151.2153,'w'],['NSW 주립미술관',-33.8688,151.2173,'c'],['서큘러키 선착장',-33.8612,151.2108,'c'],['',-33.8535,151.2108,'f',1],['Milsons Point·루나파크',-33.8479,151.2104,'f'],['North Sydney역',-33.8404,151.2069,'m'],['Coles Local · 숙소',-33.8380,151.2087,'w']]},
+d2:{note:'숙소→시내 구간은 생략. 보완안은 쿠지~브론테 해안길을 건너뛰고 브론테에서 산책 시작. 공연을 보면 Bar Totti\'s에서 오페라하우스까지 우버 약 5분.',s:[['시내 출발 (Martin Place)',-33.8679,151.2111],['브론테 해변 · Bronte Belo',-33.9036,151.2683,'b'],['타마라마 해변',-33.8990,151.2710,'w'],['Marks Park (조각전 집중 구역)',-33.8957,151.2747,'w'],['Bondi Icebergs',-33.8946,151.2741,'w'],['본다이 해변 · Anita Gelato',-33.8915,151.2767,'w'],['Bar Totti\'s 저녁',-33.8665,151.2077,'b'],['Wynyard역 → 숙소',-33.8659,151.2059,'w']],old:[['쿠지 해변',-33.9205,151.2577],['고든스베이',-33.9150,151.2630],['클로벨리',-33.9135,151.2680],['브론테',-33.9036,151.2683]]},
+d3:{note:'블루마운틴 투어 구간은 바우처 기준이라 표시하지 않고, 투어 하차 후 도심 동선만 표시.',s:[['투어 하차 (Wynyard)',-33.8659,151.2059],['천문대 언덕 Rotunda (일몰)',-33.8594,151.2045,'c'],['The Glenmore Hotel 저녁',-33.8586,151.2073,'w'],['Barangaroo역',-33.8616,151.2056,'w'],['Victoria Cross역',-33.8393,151.2063,'m'],['숙소 (또는 Rengaya)',-33.8378,151.2075,'w']]},
+d4:{note:'페리 선은 대략적인 항로 방향. 실제 항로·기항지는 운항편 기준.',s:[[...H],['McDougall St 자카란다',-33.8460,151.2155,'c'],['Cool Mac 커피',-33.8488,151.2125,'w'],['Harbour Bridge Lift',-33.8490,151.2118,'w'],['다리 남단 (Cumberland St)',-33.8575,151.2075,'w'],['Barangaroo Reserve',-33.8580,151.2020,'w'],['Lotus Barangaroo 점심',-33.8640,151.2015,'w'],['Barangaroo Wharf',-33.8636,151.2003,'w'],['',-33.8545,151.2065,'f',1],['서큘러키 (F9 환승)',-33.8612,151.2108,'f'],['',-33.8560,151.2260,'f',1],['',-33.8530,151.2460,'f',1],['',-33.8480,151.2700,'f',1],['Watsons Bay 선착장',-33.8445,151.2820,'f'],['The Gap 전망대',-33.8443,151.2860,'w'],['Watsons Bay 선착장 (복귀)',-33.8447,151.2815,'w']]},
+d5:{note:'울런공 투어 구간은 표시하지 않음. 투어 하차 후 서리힐즈 동선.',s:[['투어 하차 (Central역)',-33.8840,151.2075],['Surry Hills 트램 정류장',-33.8878,151.2118,'b'],['Pieno 저녁 (Crown St)',-33.8820,151.2135,'w'],['Gelato Messina Surry Hills',-33.8862,151.2131,'w'],['Surry Hills 트램 정류장',-33.8877,151.2119,'w'],['Central역 → 메트로 귀가',-33.8835,151.2070,'b']]},
+d6:{note:'버스 노선 선은 직선 연결. 정류장은 당일 경로 검색으로 확인.',s:[['Central역 · Railway Square',-33.8838,151.2030],['시드니대 정문',-33.8869,151.1905,'b'],['Quadrangle',-33.8858,151.1891,'w'],['City Rd 정류장',-33.8890,151.1912,'w'],['Thai Pothong (뉴타운)',-33.8975,151.1790,'b'],['STUSSY Oxford Square',-33.8790,151.2160,'c'],['QVB · Tea Room',-33.8718,151.2067,'b'],['Westfield (lululemon)',-33.8700,151.2087,'w'],['Town Hall 트램',-33.8732,151.2067,'w'],['Chinatown 트램 · Mamak',-33.8785,151.2040,'b'],['Dixon St 야시장',-33.8780,151.2025,'w'],['Central역 → 메트로 귀가',-33.8835,151.2070,'b']]},
+d7:{note:'차량 선은 직선 방향 표시. 실제 경로는 터널·도로 상황에 따라 다름.',s:[[...H],['Sydney Airport T1 Departures',-33.9361,151.1660,'c']]}};
+const MC={w:'#D85A30',m:'#7F77DD',b:'#1D9E75',f:'#378ADD',c:'#5F5E5A'},MN={w:'도보',m:'메트로·기차',b:'버스·트램',f:'페리',c:'우버·차량'};
+const FAC={w:1.3,m:1.2,b:1.3,f:1.0,c:1.3};
+const hav=(a,b)=>{const R=6371,r=x=>x*Math.PI/180,dLa=r(b[1]-a[1]),dLo=r(b[2]-a[2]),q=Math.sin(dLa/2)**2+Math.cos(r(a[1]))*Math.cos(r(b[1]))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
+function legs(r){const out=[];let acc=0,prev=r.s[0];for(let i=1;i<r.s.length;i++){const p=r.s[i];acc+=hav(prev,p);prev=p;if(!p[4]){out.push({km:acc*(FAC[p[3]]||1.2),m:p[3]});acc=0}}return out}
+const fkm=k=>k<1?(Math.max(50,Math.round(k*1000/50)*50))+'m':k.toFixed(1)+'km';
+const wmin=k=>Math.max(1,Math.round(k/3.5*60));
+const legTxt=l=>MN[l.m]+' 약 '+fkm(l.km)+(l.m==='w'?' · 걸어서 '+wmin(l.km)+'분':'');
+function daySum(id){const r=RT[id];if(!r)return'';const t={};legs(r).forEach(l=>t[l.m]=(t[l.m]||0)+l.km);return['w','m','b','f','c'].filter(m=>t[m]).map(m=>MN[m]+' '+fkm(t[m])+(m==='w'?'('+wmin(t[m])+'분)':'')).join(' · ')}
+
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const now=new Date().toLocaleDateString('en-CA',{timeZone:'Australia/Sydney'});
+const lnk=ls=>ls.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])} <i class="ti ti-external-link"></i></a>`).join('');
+const rid=()=>'r'+Math.random().toString(36).slice(2,9);
+const pObj=x=>typeof x==='string'?{id:rid(),x:x,d:false}:Object.assign({id:rid(),x:'',d:false},x);
+const rObj=r=>Array.isArray(r)?{id:rid(),t:r[0]||'',a:r[1]||'',n:r[2]||'',o:r[3]||'',opt:!!r[4]}:Object.assign({id:rid(),t:'',a:'',n:'',o:'',opt:false},r);
+const mk=c=>({id:c.id,title:c.title,prep:c.prep.map(pObj),links:c.links.slice(),rows:c.rows.map(rObj)});
+const fresh=()=>RAW.map(mk);
+function migrate(arr){return arr.map(d=>{const b=RAW.find(x=>x.id===d.id)||{prep:[],links:[]};return{id:d.id,title:String(d.title||b.title||'').replace(/^\d+\/\d+\s+\S+\s+·\s+/,''),prep:(d.prep||b.prep).map(pObj),links:d.links||b.links,rows:(d.rows||[]).map(rObj)}})}
+
+const KEY='syd2026_plan_v3',KEYC='syd2026_common_v1',KEYO='syd2026_opt_v2';let store=null;try{store=window.localStorage;store.getItem(KEY)}catch(e){store=null}
+let data=null,common=null,fromStore=false;
+try{const v=JSON.parse(store&&store.getItem(KEY));if(Array.isArray(v)&&v.length){data=migrate(v);fromStore=true}}catch(e){}
+if(!data){try{const v2=JSON.parse(store&&store.getItem('syd2026_plan_v2'));if(Array.isArray(v2)&&v2.length){data=migrate(v2);fromStore=true}}catch(e){}}
+if(!data)data=fresh();
+try{const c=JSON.parse(store&&store.getItem(KEYC));if(Array.isArray(c))common=c.map(pObj)}catch(e){}
+if(!common)common=COMMON_DEF.map(pObj);
+function save(){if(store){try{store.setItem(KEY,JSON.stringify(data));store.setItem(KEYC,JSON.stringify(common))}catch(e){}}}
+if(fromStore&&store&&!store.getItem(KEYO)){
+data.forEach(c=>{c.rows=c.rows.filter(r=>!(r.opt&&OLD_OPT_A.includes(r.a)));c.prep=c.prep.filter(p=>!OLD_OPT_P.includes(p.x))});
+RAW.forEach(b=>{const c=data.find(x=>x.id===b.id);if(!c)return;
+b.rows.forEach((r,idx)=>{if(!r[4]||data.some(d=>d.rows.some(x=>x.a===r[1])))return;c.rows.splice(Math.min(idx,c.rows.length),0,rObj(r))});
+b.prep.forEach(p=>{if(/선택안/.test(p)&&!c.prep.some(x=>x.x===p))c.prep.push(pObj(p))});
+b.links.forEach(l=>{if(!c.links.some(x=>x[1]===l[1]))c.links.push(l)})});save()}
+try{store&&store.setItem(KEYO,'1')}catch(e){}
+let saveT=null;const saveSoon=()=>{clearTimeout(saveT);saveT=setTimeout(save,400)};
+const openSet=new Set();
+const plan=document.getElementById('plan');
+let viewMode='both',hideOpt=false;
+const applyView=()=>{plan.className='m-'+viewMode+(hideOpt?' noopt':'')};
+
+const getList=s=>s==='common'?common:(data.find(c=>c.id===s)||{prep:[]}).prep;
+function prepHTML(scope){return getList(scope).map(p=>`<div class="pi${p.d?' done':''}" data-pid="${p.id}"><input type="checkbox" class="pck" ${p.d?'checked':''} aria-label="준비 완료"><span class="ce px" contenteditable="true" data-ph="준비사항 입력">${esc(p.x)}</span><button class="pdel" aria-label="준비사항 삭제"><i class="ti ti-x"></i></button></div>`).join('')+`<button class="padd"><i class="ti ti-plus"></i> 준비사항 추가</button>`}
+function refreshPrep(){document.querySelectorAll('.plist').forEach(el=>el.innerHTML=prepHTML(el.dataset.scope));updateProg()}
+function updateProg(){const all=common.concat(...data.map(c=>c.prep)),d=all.filter(p=>p.d).length,el=document.getElementById('prog');if(el)el.innerHTML=`준비 완료 ${d} / ${all.length}<div class="bar"><i style="width:${all.length?Math.round(d/all.length*100):0}%"></i></div>`}
+document.addEventListener('change',e=>{if(!e.target.classList.contains('pck'))return;const pl=e.target.closest('.plist'),it=getList(pl.dataset.scope).find(x=>x.id===e.target.closest('.pi').dataset.pid);if(!it)return;it.d=e.target.checked;save();refreshPrep()});
+document.addEventListener('input',e=>{const ce=e.target.closest('.px');if(!ce)return;const pl=ce.closest('.plist'),it=getList(pl.dataset.scope).find(x=>x.id===ce.closest('.pi').dataset.pid);if(!it)return;it.x=ce.innerText.replace(/\n/g,' ');if(ce.innerText.trim()==='')ce.innerHTML='';saveSoon()});
+document.addEventListener('focusout',e=>{const ce=e.target.closest&&e.target.closest('.px');if(!ce)return;save();const id=ce.closest('.pi').dataset.pid;document.querySelectorAll(`.pi[data-pid="${id}"] .px`).forEach(x=>{if(x!==ce)x.textContent=ce.innerText.replace(/\n/g,' ')})});
+document.addEventListener('keydown',e=>{const ce=e.target.closest&&e.target.closest('.px');if(ce&&e.key==='Enter'){e.preventDefault();ce.blur()}});
+document.addEventListener('paste',e=>{const ce=e.target.closest&&e.target.closest('[contenteditable]');if(!ce)return;e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text');document.execCommand('insertText',false,t)});
+document.addEventListener('click',e=>{const pl=e.target.closest('.plist');if(!pl)return;const list=getList(pl.dataset.scope);
+if(e.target.closest('.pdel')){const id=e.target.closest('.pi').dataset.pid,it=list.find(x=>x.id===id);if(!confirm('"'+(it.x||'빈 항목').slice(0,30)+'" 항목을 삭제할까요?'))return;list.splice(list.indexOf(it),1);save();refreshPrep()}
+else if(e.target.closest('.padd')){const it={id:rid(),x:'',d:false};list.push(it);save();refreshPrep();const el=pl.querySelector(`.pi[data-pid="${it.id}"] .px`);if(el)el.focus()}});
+
+function renderPlan(){
+let h='';
+data.forEach((c,i)=>{const D=DATES[i]||{date:'',lab:'',wx:''},ds=daySum(c.id);
+h+=`<div class="card day${openSet.has(c.id)?' open':''}" data-cid="${c.id}"><div class="dhd"><span class="grip dgrip" title="끌어서 날짜 순서 바꾸기"><i class="ti ti-grip-vertical"></i></span><span class="chip">DAY ${i+1}</span><span class="dl">${D.lab}</span>${D.date===now?'<span class="chip" style="background:var(--bg-success);color:var(--text-success)">오늘</span>':''}<span class="ce dt" contenteditable="true" data-k="title" data-ph="제목 입력">${esc(c.title)}</span>${c.rows.some(r=>r.opt)?'<span class="tg x">선택안 있음</span>':''}<button class="tog" aria-label="펼치기"><i class="ti ti-chevron-down"></i></button></div>
+<div class="bd"><div class="w"><i class="ti ti-cloud"></i> ${esc(D.wx)} <span style="color:var(--text-muted)">· ${D.lab} 예보(10/22)</span>${ds?`<div class="dist"><i class="ti ti-ruler-2"></i> 이동 거리(추정): ${ds}</div>`:''}</div><div class="rows" data-cid="${c.id}">`;
+c.rows.forEach(r=>{h+=`<div class="rw${r.opt?' opt':''}" data-rid="${r.id}"><span class="grip rgrip" title="끌어서 순서 바꾸기"><i class="ti ti-grip-vertical"></i></span><div class="t ce" contenteditable="true" data-k="t" data-ph="시간">${esc(r.t)}</div><div><div class="nw">${r.opt?'<span class="tg x">선택안</span>':'<span class="tg n">보완</span>'}<span class="ce" contenteditable="true" data-k="a" data-ph="일정 입력">${esc(r.a)}</span>${r.opt?'<button class="cf">확정</button>':''}<span class="o ce" contenteditable="true" data-k="n" data-ph="메모 추가">${esc(r.n)}</span></div><div class="old"><span class="tg">기존</span><span class="ce" contenteditable="true" data-k="o" data-ph="${r.opt?'새로 추가한 선택안':'기존 일정 없음'}">${esc(r.o)}</span></div></div><button class="del" aria-label="일정 삭제"><i class="ti ti-x"></i></button></div>`});
+h+=`</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="sm" data-act="add"><i class="ti ti-plus"></i> 일정 추가</button><button class="sm" data-act="map"><i class="ti ti-map-2"></i> 지도·거리 보기</button><button class="sm" data-act="reset">이 날 원래대로</button></div>
+<div class="sec">출발 전 확인</div><div class="plist" data-scope="${c.id}">${prepHTML(c.id)}</div><div class="lk">${lnk(c.links)}</div></div></div>`});
+plan.innerHTML=h;applyView();
+document.getElementById('planNote').textContent=(store?'수정 내용은 이 기기 브라우저에 자동 저장돼요.':'브라우저 저장이 막혀 있어 새로고침하면 수정 내용이 사라질 수 있어요. 준비·확인 탭에서 백업 코드를 복사해 두세요.')+(window.Sortable?'':' 드래그 기능을 불러오지 못했어요 (인터넷 연결 확인).');
+bindSort()}
+
+let sorts=[];
+function bindSort(){sorts.forEach(s=>{try{s.destroy()}catch(e){}});sorts=[];if(!window.Sortable)return;
+sorts.push(Sortable.create(plan,{handle:'.dgrip',draggable:'.day',animation:150,ghostClass:'ghost',onEnd:syncDOM}));
+plan.querySelectorAll('.rows').forEach(r=>sorts.push(Sortable.create(r,{group:'rows',handle:'.rgrip',draggable:'.rw',animation:150,ghostClass:'ghost',emptyInsertThreshold:20,onEnd:syncDOM})))}
+function syncDOM(){const rows={},byId={};data.forEach(c=>{byId[c.id]=c;c.rows.forEach(r=>rows[r.id]=r)});
+data=[...plan.querySelectorAll('.day')].map(el=>{const c=byId[el.dataset.cid];c.rows=[...el.querySelectorAll('.rw')].map(x=>rows[x.dataset.rid]).filter(Boolean);return c});
+save();renderPlan();renderPrep();renderMapDays();if(curDay)showDay(curDay)}
+
+plan.addEventListener('input',e=>{const ce=e.target.closest('[contenteditable]');if(!ce||ce.closest('.plist'))return;const c=data.find(x=>x.id===ce.closest('.day').dataset.cid),k=ce.dataset.k,v=ce.innerText.replace(/\n$/,'');
+if(k==='title'){c.title=v}else{const r=c.rows.find(x=>x.id===ce.closest('.rw').dataset.rid);if(r)r[k]=v}
+if(ce.innerText.trim()==='')ce.innerHTML='';saveSoon()});
+plan.addEventListener('keydown',e=>{const ce=e.target.closest('[contenteditable]');if(ce&&!ce.closest('.plist')&&e.key==='Enter'&&(ce.dataset.k==='t'||ce.dataset.k==='title')){e.preventDefault();ce.blur()}});
+plan.addEventListener('focusout',e=>{const ce=e.target.closest('[contenteditable]');if(ce&&!ce.closest('.plist')){save();if(ce.dataset.k==='title'){renderPrep();renderMapDays()}}});
+plan.addEventListener('click',e=>{const day=e.target.closest('.day');if(!day||e.target.closest('.plist'))return;const c=data.find(x=>x.id===day.dataset.cid);
+if(e.target.closest('[contenteditable]')||e.target.closest('.grip'))return;
+if(e.target.closest('.dhd')){day.classList.toggle('open');day.classList.contains('open')?openSet.add(c.id):openSet.delete(c.id);return}
+if(e.target.closest('.cf')){const r=c.rows.find(x=>x.id===e.target.closest('.rw').dataset.rid);if(r){r.opt=false;save();renderPlan()}return}
+if(e.target.closest('.del')){const rw=e.target.closest('.rw'),r=c.rows.find(x=>x.id===rw.dataset.rid);if(!confirm('"'+(r.t||r.a||'이 일정').slice(0,30)+'" 일정을 삭제할까요?'))return;c.rows=c.rows.filter(x=>x!==r);save();renderPlan();return}
+const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
+if(act==='add'){const r={id:rid(),t:'',a:'',n:'',o:'',opt:false};c.rows.push(r);openSet.add(c.id);save();renderPlan();const el=plan.querySelector(`[data-rid="${r.id}"] [data-k="t"]`);if(el)el.focus()}
+else if(act==='map'){showTab('map');showDay(c.id)}
+else if(act==='reset'){if(!confirm('이 날 일정과 준비사항을 처음 상태로 되돌릴까요?'))return;const b=RAW.find(x=>x.id===c.id);if(b){Object.assign(c,mk(b))}save();renderPlan();renderPrep()}});
+
+let map=null,layer=null,tileFail=0,curDay=null,markers=[];
+function initMap(){if(map||!window.L||!L.map)return!!map;map=L.map('map');const tl=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);tl.on('tileerror',()=>{tileFail++;if(tileFail===3)document.getElementById('mapNote').insertAdjacentHTML('afterbegin','<div style="color:var(--text-warning);margin-bottom:4px">지도 배경을 불러오지 못해 위치와 경로만 보여요. 구글맵 버튼으로 실제 지도를 열 수 있어요.</div>')});layer=L.layerGroup().addTo(map);return true}
+function renderMapDays(){const el=document.getElementById('mapDays');el.innerHTML=data.map((c,i)=>`<button data-d="${c.id}" style="font-size:13px" class="${c.id===curDay?'on':''}">${(DATES[i]||{lab:''}).lab} · ${esc(c.title.split(' · ')[0])}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>showDay(b.dataset.d))}
+function showDay(id){curDay=id;const pos=data.findIndex(d=>d.id===id),c=data[pos],r=RT[id];
+document.querySelectorAll('#mapDays button').forEach(b=>b.classList.toggle('on',b.dataset.d===id));
+document.getElementById('mapTitle').textContent='DAY '+(pos+1)+' · '+(DATES[pos]||{lab:''}).lab+' · '+c.title;
+const sum=document.getElementById('mapSum');
+if(!r){sum.style.display='none';document.getElementById('mapList').innerHTML='<div class="w">이 일정에는 지도 동선이 없어요.</div>';document.getElementById('mapGo').innerHTML='';document.getElementById('mapNote').textContent='';if(layer)layer.clearLayers();return}
+sum.style.display='block';sum.innerHTML='<i class="ti ti-ruler-2"></i> 하루 이동 거리(추정): '+daySum(id);
+const vis=r.s.filter(p=>!p[4]),lg=legs(r);
+document.getElementById('mapList').innerHTML=vis.map((p,k)=>{let leg='';if(k>0){const l=lg[k-1],q=vis[k-1];leg=`<div class="dist"><span style="color:${MC[l.m]}">●</span> ${legTxt(l)}`;if('mbf'.includes(l.m)){leg+=` <a class="bt" href="https://www.google.com/maps/dir/?api=1&origin=${q[1]},${q[2]}&destination=${p[1]},${p[2]}&travelmode=transit" target="_blank" rel="noopener" style="margin-left:4px"><i class="ti ti-clock"></i> 실시간 교통</a>`}else if(l.m==='w'){leg+=` <a class="bt" href="https://www.google.com/maps/dir/?api=1&origin=${q[1]},${q[2]}&destination=${p[1]},${p[2]}&travelmode=walking" target="_blank" rel="noopener" style="margin-left:4px"><i class="ti ti-walk"></i> 도보 경로</a>`}leg+='</div>'}
+return `<div class="st" data-k="${k}"><div class="num" style="background:${k===0?'#5F5E5A':'#26215C'};cursor:pointer">${k+1}</div><div><span class="pn" style="cursor:pointer">${esc(p[0])}</span>${leg}</div></div>`}).join('')+(r.old?`<div style="font-size:12px;color:var(--text-muted);padding-top:8px;border-top:0.5px solid var(--border)">회색 점선: 기존 일정의 쿠지 → 브론테 해안길, 약 ${fkm(r.old.slice(1).reduce((s,p,i)=>s+hav(r.old[i],p),0)*1.3)} (보완안에서 생략)</div>`:'');
+const pts=vis.map(p=>p[1]+','+p[2]);let url='https://www.google.com/maps/dir/?api=1&origin='+pts[0]+'&destination='+pts[pts.length-1];if(pts.length>2)url+='&waypoints='+encodeURIComponent(pts.slice(1,-1).slice(0,9).join('|'));
+document.getElementById('mapGo').innerHTML=`<a class="bt" href="${url}" target="_blank" rel="noopener" style="font-size:13px;padding:5px 12px"><i class="ti ti-route"></i> 구글맵에서 전체 경로 열기</a><a class="bt" href="https://transportnsw.info/trip" target="_blank" rel="noopener" style="font-size:13px;padding:5px 12px"><i class="ti ti-bus"></i> NSW 경로 검색</a>`;
+document.getElementById('mapNote').textContent=r.note+' 일정 탭에서 수정한 내용은 지도에 반영되지 않아요.';tileFail=0;
+if(!initMap()){document.getElementById('map').innerHTML='<div style="padding:1rem;font-size:13px;color:var(--text-secondary)">지도 라이브러리를 불러오지 못했어요. 아래 목록과 구글맵 버튼을 이용하세요.</div>';return}
+setTimeout(()=>map.invalidateSize(),50);layer.clearLayers();markers=[];
+if(r.old)L.polyline(r.old.map(p=>[p[1],p[2]]),{color:'#888780',weight:3,dashArray:'6 6'}).addTo(layer);
+for(let k=1;k<r.s.length;k++){const a=r.s[k-1],b=r.s[k];L.polyline([[a[1],a[2]],[b[1],b[2]]],{color:MC[b[3]]||'#888780',weight:4,opacity:0.9,dashArray:b[3]==='f'?'8 6':null}).addTo(layer)}
+vis.forEach((p,k)=>{const m=L.marker([p[1],p[2]],{icon:L.divIcon({className:'',html:`<div class="num" style="background:${k===0?'#5F5E5A':'#26215C'}">${k+1}</div>`,iconSize:[22,22],iconAnchor:[11,11]})}).bindTooltip(p[0]+(k>0?' · '+legTxt(lg[k-1]):'')).addTo(layer);markers.push(m)});
+const all=r.s.map(p=>[p[1],p[2]]).concat(r.old?r.old.map(p=>[p[1],p[2]]):[]);map.fitBounds(all,{padding:[30,30],maxZoom:16});
+document.querySelectorAll('#mapList .st').forEach(el=>{const go=()=>{const m=markers[+el.dataset.k];if(m){map.setView(m.getLatLng(),16);m.openTooltip()}};el.querySelector('.num').onclick=go;el.querySelector('.pn').onclick=go})}
+
+function renderPrep(){let h=`<div class="card"><div class="bd" style="padding-top:14px"><div id="prog" style="font-size:13px"></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">체크하면 취소선이 그어지고, 다시 누르면 지워져요. 글자를 누르면 수정할 수 있어요.</div></div></div>
+<div class="card"><div class="bd" style="padding-top:14px"><div class="sec" style="margin-top:0">전체 공통</div><div class="plist" data-scope="common">${prepHTML('common')}</div><div class="lk">${lnk([LK.bomS,LK.trip,LK.alerts,LK.trs,LK.syd])}</div></div></div>`;
+data.forEach((d,i)=>{h+=`<div class="card"><div class="bd" style="padding-top:14px"><div class="sec" style="margin-top:0">DAY ${i+1} · ${(DATES[i]||{lab:''}).lab} · ${esc(d.title)}</div><div class="plist" data-scope="${d.id}">${prepHTML(d.id)}</div><div class="lk">${lnk(d.links)}</div></div></div>`});
+h+=`<div class="card"><div class="bd" style="padding-top:14px"><div class="sec" style="margin-top:0">편집 내용 백업·불러오기</div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px">일정과 준비사항을 다른 기기로 옮길 때 사용하세요. 서류 파일은 포함되지 않아요.</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button id="exp"><i class="ti ti-copy"></i> 백업 코드 보기</button><button id="imp"><i class="ti ti-upload"></i> 붙여넣은 코드 불러오기</button><button id="rst">전체 원래대로</button></div><div class="ed" style="margin-top:8px"><textarea id="bk" placeholder="백업 코드"></textarea></div><div id="bkmsg" style="font-size:13px;margin-top:4px"></div></div></div>`;
+const el=document.getElementById('prep');el.innerHTML=h;updateProg();const bk=el.querySelector('#bk'),m=el.querySelector('#bkmsg');
+el.querySelector('#exp').onclick=()=>{bk.value=JSON.stringify({days:data,common:common});bk.select();try{navigator.clipboard.writeText(bk.value);m.style.color='var(--text-success)';m.textContent='복사했어요'}catch(e){m.textContent='코드를 길게 눌러 복사하세요'}};
+el.querySelector('#imp').onclick=()=>{try{let v=JSON.parse(bk.value);let days=Array.isArray(v)?v:v.days;if(!Array.isArray(days)||!days.length||!days[0].rows)throw 0;data=migrate(days);if(v.common)common=v.common.map(pObj);save();renderPlan();renderPrep();renderMapDays();const m2=document.getElementById('bkmsg');m2.style.color='var(--text-success)';m2.textContent='불러왔어요'}catch(e){m.style.color='var(--text-danger)';m.textContent='코드 형식이 맞지 않아요. 백업 코드를 그대로 붙여넣어 주세요'}};
+bk.oninput=()=>{m.textContent=''};
+el.querySelector('#rst').onclick=()=>{if(!confirm('일정, 날짜 순서, 준비사항 체크를 모두 처음 상태로 되돌릴까요?'))return;data=fresh();common=COMMON_DEF.map(pObj);save();renderPlan();renderPrep();renderMapDays()}}
+
+const WC=c=>c===0?'맑음':c<=2?'구름 조금':c===3?'흐림':c<=48?'안개':c<=57?'이슬비':c<=67?'비':c<=77?'눈':c<=82?'소나기':'뇌우';
+const LOC=[['시드니 (숙소)',-33.8389,151.2069],['카툼바 (블루마운틴)',-33.7128,150.3119],['울런공',-34.4248,150.8931]];
+let wxDone=false;
+function renderWx(){wxDone=true;const el=document.getElementById('wx');el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;color:var(--text-secondary)" id="wxst">불러오는 중…</div><button id="wxr"><i class="ti ti-refresh"></i> 새로고침</button></div><div id="wxb"></div><div class="lk" style="margin:4px 0 12px">${lnk([LK.bomS,LK.radar,LK.bomK,LK.bomW])}</div><div style="font-size:12px;color:var(--text-muted)">데이터: Open-Meteo. 공식 특보·뇌우 경보는 BoM 링크가 기준이에요.</div>`;
+document.getElementById('wxr').onclick=loadWx;loadWx()}
+async function loadWx(){const st=document.getElementById('wxst'),b=document.getElementById('wxb');st.textContent='불러오는 중…';let h='',ok=0;
+for(const[n,la,lo]of LOC){try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Australia%2FSydney&forecast_days=16`);if(!r.ok)throw 0;const j=await r.json();ok++;const c=j.current,dd=j.daily;
+let days='';dd.time.forEach((t,k)=>{if(t<'2026-10-25'||t>'2026-10-31')return;const wk='일월화수목금토'[new Date(t+'T00:00').getDay()];days+=`<div class="wd" style="${t===now?'outline:1px solid var(--border-accent)':''}"><div style="color:var(--text-secondary)">${t.slice(5).replace('-','/')} ${wk}</div><div style="font-weight:500">${Math.round(dd.temperature_2m_min[k])}~${Math.round(dd.temperature_2m_max[k])}°</div><div>${WC(dd.weather_code[k])}</div><div style="color:var(--text-accent)">비 ${dd.precipitation_probability_max[k]??'-'}%</div><div style="color:var(--text-muted)">바람 ${Math.round(dd.wind_speed_10m_max[k])}</div></div>`});
+h+=`<div class="card"><div class="bd" style="padding-top:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px"><span style="font-weight:500">${n}</span><span style="font-size:13px;color:var(--text-secondary)">지금 ${Math.round(c.temperature_2m)}° (체감 ${Math.round(c.apparent_temperature)}°) · ${WC(c.weather_code)} · 바람 ${Math.round(c.wind_speed_10m)}km/h</span></div><div class="wx" style="margin-top:10px">${days||'<div style="font-size:13px;color:var(--text-muted)">여행 기간 예보가 아직 범위 밖이에요.</div>'}</div></div></div>`}catch(e){}}
+if(ok){b.innerHTML=h;st.textContent='업데이트 '+new Date().toLocaleTimeString('ko-KR',{timeZone:'Australia/Sydney',hour:'2-digit',minute:'2-digit'})+' (시드니 시각)'}else{b.innerHTML='';st.textContent='실시간 데이터를 불러오지 못했어요. 아래 BoM 링크로 확인하세요.'}}
+
+const CATS=['여권','여행자보험','항공권','숙소','투어 바우처','공연·예약','기타'];
+let docDB=null,docURLs=[],docsReady=false;
+const openDB=()=>docDB?Promise.resolve(docDB):new Promise((ok,no)=>{try{const r=indexedDB.open('syd2026_docs',1);r.onupgradeneeded=()=>r.result.createObjectStore('files',{keyPath:'id'});r.onsuccess=()=>ok(docDB=r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}});
+const runDB=(m,f)=>openDB().then(d=>new Promise((ok,no)=>{const t=d.transaction('files',m),q=f(t.objectStore('files'));t.oncomplete=()=>ok(q.result);t.onerror=()=>no(t.error)}));
+const fsz=b=>b<1048576?Math.round(b/1024)+'KB':(b/1048576).toFixed(1)+'MB';
+function initDocs(){
+if(docsReady){listDocs();return}docsReady=true;
+document.getElementById('dcCat').innerHTML=CATS.map(c=>'<option>'+c+'</option>').join('');
+const msg=document.getElementById('dcMsg'),fi=document.getElementById('dcFile');
+const say=(t,c)=>{msg.style.color=c||'';msg.textContent=t};
+fi.onchange=()=>say('');
+document.getElementById('dcUp').onclick=async()=>{
+const fs=[...fi.files];
+if(!fs.length)return say('먼저 파일을 선택하세요','var(--text-danger)');
+if(fs.some(f=>f.size>25*1048576))return say('25MB가 넘는 파일이 있어요. 크기를 줄여서 올려주세요','var(--text-danger)');
+try{for(const f of fs){await runDB('readwrite',s=>s.put({id:Date.now()+'_'+Math.random().toString(36).slice(2,7),name:f.name,type:f.type,size:f.size,cat:document.getElementById('dcCat').value,memo:document.getElementById('dcMemo').value.trim(),added:new Date().toISOString(),blob:f}))}
+try{navigator.storage.persist()}catch(e){}
+say(fs.length+'개 저장했어요','var(--text-success)');fi.value='';document.getElementById('dcMemo').value='';listDocs()}
+catch(e){say('저장하지 못했어요. 사생활 보호(시크릿) 모드인지 확인하세요','var(--text-danger)')}};
+listDocs()}
+async function listDocs(){
+docURLs.forEach(u=>URL.revokeObjectURL(u));docURLs=[];
+const el=document.getElementById('dcList');let all;
+try{all=await runDB('readonly',s=>s.getAll())}catch(e){el.innerHTML='<div class="w" style="color:var(--text-danger)">이 브라우저에서는 파일 저장소를 쓸 수 없어요. Chrome이나 Safari 일반 모드로 열어주세요.</div>';return}
+if(!all.length){el.innerHTML='<div class="w">아직 올린 서류가 없어요. 여권 사본, 보험 증서, 항공권 e티켓부터 올려두세요.</div>';return}
+let h='';
+CATS.forEach(c=>{const fs=all.filter(f=>f.cat===c);if(!fs.length)return;
+h+='<div class="card"><div class="bd" style="padding-top:14px"><div class="sec" style="margin-top:0">'+c+' <span style="color:var(--text-muted)">'+fs.length+'</span></div>';
+fs.forEach(f=>{const u=URL.createObjectURL(f.blob);docURLs.push(u);const img=f.type.startsWith('image/');
+h+='<div class="fr"><div class="th">'+(img?'<img src="'+u+'" alt="" style="width:100%;height:100%;object-fit:cover">':'<i class="ti ti-file-type-pdf" style="font-size:22px;color:var(--text-secondary)"></i>')+'</div>'
++'<div><div style="font-size:14px;word-break:break-all">'+esc(f.name)+'</div>'+(f.memo?'<div style="font-size:12px;color:var(--text-secondary)">'+esc(f.memo)+'</div>':'')
++'<div style="font-size:12px;color:var(--text-muted)">'+fsz(f.size)+' · '+f.added.slice(0,10)+'</div>'
++'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'
++'<button class="sm" data-v="'+f.id+'"><i class="ti ti-eye"></i> 보기</button>'
++'<a class="bt" href="'+u+'" target="_blank"><i class="ti ti-external-link"></i> 새 탭</a>'
++'<a class="bt" href="'+u+'" download="'+esc(f.name)+'"><i class="ti ti-download"></i> 내려받기</a>'
++'<button class="sm" data-x="'+f.id+'" style="color:var(--text-danger)"><i class="ti ti-trash"></i> 삭제</button>'
++'</div></div></div>'});
+h+='</div></div>'});
+el.innerHTML=h;
+el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{const f=all.find(x=>x.id===b.dataset.v),u=URL.createObjectURL(f.blob);docURLs.push(u);
+const v=document.getElementById('dcView');
+v.innerHTML='<div class="card"><div class="bd" style="padding-top:14px"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px"><span style="font-weight:500;word-break:break-all">'+esc(f.name)+'</span><button class="sm" id="dcClose"><i class="ti ti-x"></i> 닫기</button></div>'
++(f.type.startsWith('image/')?'<img src="'+u+'" alt="" style="width:100%;border-radius:var(--radius)">':'<iframe src="'+u+'" style="width:100%;height:520px;border:0.5px solid var(--border);border-radius:var(--radius)"></iframe><div style="font-size:12px;color:var(--text-muted);margin-top:6px">PDF가 안 보이면 새 탭으로 여세요.</div>')
++'</div></div>';
+document.getElementById('dcClose').onclick=()=>{v.innerHTML=''};v.scrollIntoView({behavior:'smooth'})});
+el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const f=all.find(x=>x.id===b.dataset.x);if(!confirm(f.name+' 파일을 삭제할까요?'))return;await runDB('readwrite',s=>s.delete(f.id));document.getElementById('dcView').innerHTML='';listDocs()});
+}
+
+const PANES={plan:'planWrap',map:'mapWrap',wx:'wx',prep:'prep',docs:'docs'};
+const ti=DATES.findIndex(d=>d.date===now);
+function showTab(t){document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));Object.entries(PANES).forEach(([k,v])=>document.getElementById(v).style.display=k===t?'block':'none');
+if(t==='map'){renderMapDays();if(!curDay)showDay(data[ti>=0?ti:0].id);else if(map)setTimeout(()=>map.invalidateSize(),50)}
+if(t==='wx'&&!wxDone)renderWx();if(t==='docs')initDocs()}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('on',x===b));viewMode=b.dataset.mode;applyView()});
+document.getElementById('optTog').onclick=function(){hideOpt=!hideOpt;this.classList.toggle('on',hideOpt);this.innerHTML=hideOpt?'<i class="ti ti-eye"></i> 선택안 보이기':'<i class="ti ti-eye-off"></i> 선택안 숨기기';applyView()};
+const lbl=document.getElementById('today');
+if(ti>=0){openSet.add(data[ti].id);lbl.textContent='오늘은 DAY '+(ti+1)+' (시드니 기준)'}else{const dd=Math.round((new Date('2026-10-25')-new Date(now))/864e5);lbl.textContent=dd>0?'출발까지 '+dd+'일':'여행 기간이 끝났어요';openSet.add(data[0].id)}
+renderPlan();renderPrep();
+</script>
+</body>
+</html>
